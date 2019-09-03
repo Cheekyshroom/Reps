@@ -6,7 +6,7 @@ A featureless command line spaced repetition program, it requires python3, and w
 make install
 ```
 
-Then use the example import, or create an import file in the form of:
+Then use the example import `test-import.sql`, or create an import file in the form of:
 ```
 "word", "translation"
 ...
