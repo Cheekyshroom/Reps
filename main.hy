@@ -17,7 +17,9 @@
     :const True :default False
     :help "Whether to invert the questions and answers.")
   (.add-argument parser "-file" :type string :default None
-    :help "File to import.")
+    :help "Import a file.")
+  (.add-argument parser "-list" :type string :default None
+    :help "The list that you're going to import or train on.")
   (setv args (parser.parse-args))
 
   (setv db-filename (.format "{}/.reps.db" (str (Path.home))))
@@ -25,15 +27,15 @@
   (setv wl (Words db))
 
   (when args.file
-    (print "Importing list from" args.file)
-    (wl.import-words (slurp args.file)))
+    (print "Importing list from" args.file "into" args.list)
+    (wl.import-words (slurp args.file) args.list))
 
   (setv trainer (Trainer wl))
-  (trainer.train args.flip args.n)
   (try
+    (trainer.train args.flip (or args.list "%") args.n)
     (while (in (.lower (input "Would you like to train again? "))
               ["y" "yes" "yee" "yarp" "yea" "yeah" "yap" "duh" "si" "oui" "."])
-      (trainer.train args.flip args.n))
+      (trainer.train args.flip (or args.list "%") args.n))
     (except [e EOFError]
       (print "Goodbye.")))
 

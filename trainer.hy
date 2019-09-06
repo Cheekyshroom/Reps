@@ -11,17 +11,23 @@
   (defn --init-- [self words]
     (setv self.words words))
 
-  (defn train [self &optional flipped [n 6]]
+  (defn train [self &optional flipped [l "%"] [n 6]]
     (setv total-correct 0)
     (setv total-trained 0)
-    (setv training-words (self.words.next-trainable-words))
-    (setv distraction-words (self.words.next-distraction-words (* n 3)))
+    (setv training-words (self.words.next-trainable-words l))
+    (setv distraction-words (self.words.next-distraction-words l (* n 3)))
+
+    (when (or (= (len distraction-words) 0)
+              (= (len training-words) 0))
+      (print "No words found in list:" l)
+      (raise (EOFError)))
+
     (setv training-sequence (shuffle (+ training-words
                                         training-words
                                         training-words)))
 
     (for [correct training-sequence]
-      (setv choices (shuffle (+ (random.sample distraction-words :k (- n 1)) [correct])))
+      (setv choices (shuffle (+ (random.sample distraction-words :k 5) [correct])))
 
       (print (.format "What's the translation of: {}?"
              (.get correct (if flipped "translation" "word"))))
