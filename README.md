@@ -14,13 +14,23 @@ Then use the example import `test-import.sql`, or create an import file in the f
 
 And run:
 ```
-reps -file <filename>
+reps -file <filename> -list <list name>
 ```
 To import them.
 
 You can invert the questions and answers with:
 ```
 reps --flip
+```
+
+You can study specific lists
+```
+reps -list <a list>
+```
+
+You can review words, when you have some that you've trained.
+```
+reps --review
 ```
 
 And give yourself more words per session with (the default is 6):

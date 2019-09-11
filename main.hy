@@ -15,7 +15,7 @@
     :help "Number of words to train per session.")
   (.add-argument parser "--flip" :dest "flip" :action "store_const"
     :const True :default False
-    :help "Whether to invert the questions and answers.")
+    :help "Invert the questions and answers.")
   (.add-argument parser "--review" :dest "review" :action "store_const"
     :const True :default False
     :help "Review words you've already learned.")
