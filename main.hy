@@ -16,6 +16,9 @@
   (.add-argument parser "--flip" :dest "flip" :action "store_const"
     :const True :default False
     :help "Whether to invert the questions and answers.")
+  (.add-argument parser "--review" :dest "review" :action "store_const"
+    :const True :default False
+    :help "Review words you've already learned.")
   (.add-argument parser "-file" :type string :default None
     :help "Import a file.")
   (.add-argument parser "-list" :type string :default None
@@ -32,10 +35,10 @@
 
   (setv trainer (Trainer wl))
   (try
-    (trainer.train args.flip (or args.list "%") args.n)
+    (trainer.train args.flip args.review (or args.list "%") args.n)
     (while (in (.lower (input "Would you like to train again? "))
               ["y" "yes" "yee" "yarp" "yea" "yeah" "yap" "duh" "si" "oui" "."])
-      (trainer.train args.flip (or args.list "%") args.n))
+      (trainer.train args.flip args.review (or args.list "%") args.n))
     (except [e EOFError]
       (print "Goodbye.")))
 

@@ -1,4 +1,5 @@
 (import database)
+(import time)
 
 (defclass Words [database.Table]
   [fields [
@@ -10,6 +11,7 @@
     (, "times_correct" "int")
     (, "times_incorrect" "int")
     (, "comment" "text")
+    (, "learning_interval" "int")
    ]
    table-name "words"]
 
@@ -21,6 +23,14 @@ where ((times_seen < 6) or
 order by last_seen + (random() % 500)
 limit ?" (, l n)))
 
+  (defn next-reviewable-words [self &optional [l "%"] [n 6]]
+    (self.get "
+where ((times_seen >= 3) and
+       (? >= (last_seen + learning_interval))) and
+      list like ?
+order by last_seen + (random() % 5) desc
+limit ?" (, (int (time.time)) l n)))
+
   (defn next-distraction-words [self &optional [l "%"] [n 18]]
     (self.get "
 where list like ?
@@ -30,7 +40,8 @@ order by (random() % 69) limit ?" (, l n )))
     (self.execute (.format "insert into words values {};"
                            (.join ",\n" (lfor w (.split words "\n")
                                           :if (!= w "")
-                                          (.format "(\"{}\", {}, 0, 0, 0, 0, \"\")" (if l l "all") w))))))
+                                          (.format "(\"{}\", {}, 0, 0, 0, 0, \"\", 0)"
+                                                   (if l l "all") w))))))
 
   (defn export-words [self]
     (print (self.fetchall "select * from words;")))
