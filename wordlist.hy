@@ -17,7 +17,7 @@
 
   (defn next-trainable-words [self &optional [l "%"] [n 6]]
     (self.get "
-where ((times_seen < 6) or
+where ((times_seen < 3) or
        (abs(random() % 10) < 2)) and
       list like ?
 order by last_seen + (random() % 500)

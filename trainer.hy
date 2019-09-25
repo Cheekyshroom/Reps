@@ -1,9 +1,10 @@
 (import random
         re
-        time)
+        time
+        [queue [Queue]])
 
 (setv CORRECT-INTERVAL-MULTIPLIER 1.7)
-(setv CORRECT-INTERVAL-STEP 1800)
+(setv CORRECT-INTERVAL-STEP (/ 86400 3))
 (setv INCORRECT-INTERVAL-MULTIPLIER 0.8)
 
 (defn shuffle [l]
@@ -27,7 +28,14 @@
           'word word
         })))
 
-    (for [correct training-sequence]
+    (setv words-seen 0)
+    (setv word-queue (Queue))
+    (for [word training-sequence]
+      (word-queue.put word))
+
+    (while (not (word-queue.empty))
+      (setv correct (word-queue.get))
+      (setv words-seen (inc words-seen))
       (setv choices (shuffle (+ (random.sample distraction-words :k 5) [correct])))
 
       (print (.format "What's the translation of: {}?"
@@ -57,6 +65,7 @@
               (assoc correct "times_correct" (inc (.get correct "times_correct")))
               (setv total-correct (inc total-correct))]
             [True
+              (word-queue.put correct)
               (print "INCORRECT, ANSWER WAS:" (.get correct answer-index))
               (assoc correct "learning_interval" (* (.get correct "learning_interval")
                                                     INCORRECT-INTERVAL-MULTIPLIER)
@@ -69,7 +78,7 @@
 
     (print (.format "You got {} correct out of {}, and you finished training {} words."
                     total-correct
-                    (len training-sequence)
+                    words-seen
                     total-trained)))
 
   (defn train [self &optional flipped review [l "%"] [n 6]]
